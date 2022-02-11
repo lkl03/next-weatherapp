@@ -1,5 +1,6 @@
 import Head from 'next/head'
 import SearchBox from '../components/SearchBox'
+import FamousPlaces from '../components/FamousPlaces'
 
 export default function Home() {
   return (
@@ -8,7 +9,10 @@ export default function Home() {
         <title>Next Weather App</title>
       </Head>
       <div className="home">
-        <SearchBox placeholder="Search for a city..." />
+        <div className="container">
+          <SearchBox placeholder="Search for a city..." />
+          <FamousPlaces />
+        </div>
       </div>
     </>
   )
