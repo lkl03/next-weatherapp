@@ -1,10 +1,18 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import cities from '../lib/city.list.json'
 import Link from 'next/link'
+import Router from 'next/router'
 
-const SearchBox = () => {
+export default function SearchBox ({placeholder}) {
     const [query, setQuery] = useState('')
     const [results, setResults] = useState([])
+    useEffect(() => {
+        const clearQuery = () => setQuery('')
+        Router.events.on("routeChangeComplete", clearQuery)
+        return () => {
+            Router.events.off("routeChangeComplete", clearQuery)
+        }
+    }, [])
 
     const onChange = (e) => {
         const {value} = e.target
@@ -33,7 +41,7 @@ const SearchBox = () => {
 
     return (
     <div className="search">
-        <input type="text" value={query} onChange={onChange}/>
+        <input type="text" value={query} onChange={onChange} placeholder={placeholder ? placeholder: ''}/>
         {query.length > 3 && (
             <ul>
                 {results.length > 0 ? (
@@ -56,5 +64,3 @@ const SearchBox = () => {
     </div>
   )
 }
-
-export default SearchBox

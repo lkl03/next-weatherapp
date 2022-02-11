@@ -1,5 +1,12 @@
 import React from 'react'
+import Head from 'next/head'
 import cities from '../../lib/city.list.json'
+import TodayWeather from '../../components/TodayWeather'
+import moment from 'moment'
+import HourlyWeather from '../../components/HourlyWeather'
+import WeeklyWeather from '../../components/WeeklyWeather'
+import SearchBox from '../../components/SearchBox'
+
 
 export async function getServerSideProps(context) {
     const city = getCity(context.params.city)
@@ -20,9 +27,10 @@ export async function getServerSideProps(context) {
     return {
         props: {
             city: city,
+            timezone: data.timezone,
             currentWeather: data.current,
             dailyWeather: data.daily,
-            hourlyWeather: getHourlyWeather(data.hourly),
+            hourlyWeather: getHourlyWeather(data.hourly, data.timezone),
         }
     }
 }
@@ -44,25 +52,29 @@ const getCity = param => {
     }
 }
 
-const getHourlyWeather = (hourlyData) => {
-    const current = new Date()
-    current.setHours(current.getHours(), 0, 0, 0)
-    const tomorrow = new Date(current)
-    tomorrow.setDate(tomorrow.getDate() + 1)
-    tomorrow.setHours(0,0,0,0)
+const getHourlyWeather = (hourlyData, timezone) => {
+    const endOfDay = moment().tz(timezone).endOf('day').valueOf()
+    const eodTimeStamp = Math.floor(endOfDay / 1000)
 
-    const currentTimeStamp = Math.floor(current.getTime() /  1000)
-    const tomorrowTimeStamp = Math.floor(tomorrow.getTime() / 1000)
-
-    const todayData = hourlyData.filter(data => data.dt < tomorrowTimeStamp)
+    const todayData = hourlyData.filter(data => data.dt < eodTimeStamp)
     return todayData
 }
 
-const City = ({hourlyWeather, currentWeather, dailyWeather}) => {
+const City = ({city, timezone, currentWeather, dailyWeather, hourlyWeather}) => {
     return (
-    <div>
-        <h1>City Page</h1>
-    </div>
+    <>
+        <Head>
+            <title>{city.name} Weather || NWA</title>
+        </Head>
+        <div className="page-wrapper">
+            <div className="container">
+                <SearchBox placeholder="Search for another location..." />
+                <TodayWeather city={city} weather={dailyWeather[0]} timezone={timezone} />
+                <HourlyWeather hourlyWeather={hourlyWeather} timezone={timezone} />
+                <WeeklyWeather weeklyWeather={dailyWeather} timezone={timezone} />
+            </div>
+        </div>
+    </>
   )
 }
 

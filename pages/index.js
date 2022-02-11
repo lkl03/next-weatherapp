@@ -8,7 +8,7 @@ export default function Home() {
         <title>Next Weather App</title>
       </Head>
       <div className="home">
-        <SearchBox />
+        <SearchBox placeholder="Search for a city..." />
       </div>
     </>
   )
