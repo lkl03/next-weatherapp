@@ -1,8 +1,6 @@
 require("dotenv").config()
 
-module.exports = {
-  reactStrictMode: true,
-  images: {
-    domains: ["openweathermap.org"],
-  }
+export const reactStrictMode = true
+export const images = {
+  domains: ["openweathermap.org"],
 }
